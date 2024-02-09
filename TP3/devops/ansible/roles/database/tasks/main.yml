@@ -1,0 +1,10 @@
+---
+# tasks file for devops/ansible/roles/database
+- name: Create database
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  community.docker.docker_container:
+    name: database
+    image: ottera/devops-database
+    networks:
+      - name: app-network

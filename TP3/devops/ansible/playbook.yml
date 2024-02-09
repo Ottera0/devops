@@ -1,0 +1,14 @@
+- hosts: all
+  gather_facts: false
+  become: true
+  vars_files:
+    - vars/secret.yml
+
+# Install Docker
+  roles:
+    - docker
+    - network
+    - database
+    - app
+    - proxy
+

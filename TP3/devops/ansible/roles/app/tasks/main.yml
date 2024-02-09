@@ -1,0 +1,14 @@
+---
+# tasks file for devops/ansible/roles/database
+- name: Create backend container
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  community.docker.docker_container:
+    name: backend
+    image: ottera/devops-backend 
+    networks:
+      - name: app-network
+    env:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://database/db
+      SPRING_DATASOURCE_USER: usr
+      SPRING_DATASOURCE_PASSWORD: pwd

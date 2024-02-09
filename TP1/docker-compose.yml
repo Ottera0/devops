@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+    backend:
+        image: devops-backend
+        environment:  
+          - SPRING_DATASOURCE_URL=jdbc:postgresql://database/db
+          - SPRING_DATASOURCE_USER=usr
+          - SPRING_DATASOURCE_PASSWORD=pwd
+        networks:
+          - my-network
+
+        depends_on:
+          - database
+
+    database:
+        image: devops-database
+        volumes:
+            - ./local-db:/var/lib/postgresql/data
+        networks:
+          - my-network
+
+    httpd:
+        image: devops-httpd
+        ports:
+          - 80:80
+        networks:
+          - my-network
+        depends_on:
+          - backend
+
+
+
+networks:
+    my-network:

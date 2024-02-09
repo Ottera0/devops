@@ -1,0 +1,36 @@
+name: Devops Sonar TP2
+
+# This workflow is triggered on push and pull request events to the main and develop branches
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  build-run-sonarcloud: 
+    # Specifies that the job will run on an Ubuntu 22.04 runner 
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+        # This action checks out a copy of your repository
+
+      # Sets up a specific version of Java (JDK 17) from the AdoptOpenJDK distribution and caches the Maven dependencies 
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+          cache: maven
+
+      # Compiles the code, runs tests, and performs static code analysis with SonarCloud
+      - name: Build and test with Maven
+        # Defines the working directory for subsequent steps
+        working-directory: ./TP1/devops-backend/simple-api-student/
+        # Runs Maven goals to build the project, run tests, and execute the SonarCloud scanner
+        run: mvn -B verify sonar:sonar -Dsonar.projectKey=ewan-cereza_devops -Dsonar.organization=ewan-cereza -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}  --file pom.xml
+       

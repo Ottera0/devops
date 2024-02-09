@@ -1,0 +1,7 @@
+---
+# tasks file for devops/ansible/roles/network
+- name: Create network
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  community.docker.docker_network:
+    name: app-network

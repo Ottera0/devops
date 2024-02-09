@@ -1,0 +1,57 @@
+name: Devops Docker TP2
+
+on: 
+  workflow_run:
+    workflows: ["Devops Sonar TP2"]
+    types:
+      - completed
+    branches:
+      - main
+
+jobs:
+  build-docker-image:
+    # Run this job only if the previous workflow was successful
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    # Specifies that the job will run on an Ubuntu 22.04 runner
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        # This action checks out the repository under $GITHUB_WORKSPACE, so the workflow can access it
+        uses: actions/checkout@v2.5.0
+
+      - name: Login to DockerHub
+        # This step logs in to DockerHub using the username and password stored in GitHub secrets
+        run: docker login -u ${{ secrets.DOCKERHUB_USR }} -p ${{ secrets.DOCKERHUB_PWD }}
+
+      - name: Build image and push backend
+        # This action builds the Docker image and pushes it to DockerHub
+        uses: docker/build-push-action@v3
+        with:
+          # Specifies the directory where the Dockerfile for the backend is located
+          context: ./TP1/devops-backend/simple-api-student
+          # Docker image tag; all Docker tags must be lowercase
+          tags:  ${{secrets.DOCKERHUB_USR}}/devops-backend:latest
+          # Only push the image if the current branch is 'main'
+          push: ${{ github.ref == 'refs/heads/main' }}
+
+      - name: Build image and push database
+        # This action builds the Docker image for the database and pushes it to DockerHub
+        uses: docker/build-push-action@v3
+        with:
+          # Specifies the directory where the Dockerfile for the database is located
+          context: ./TP1/devops-database
+          # Docker image tag; all Docker tags must be lowercase
+          tags:  ${{secrets.DOCKERHUB_USR}}/devops-database:latest
+          # Only push the image if the current branch is 'main'
+          push: ${{ github.ref == 'refs/heads/main' }}
+
+      - name: Build image and push httpd
+        # This action builds the Docker image for the httpd server and pushes it to DockerHub
+        uses: docker/build-push-action@v3
+        with:
+          # Specifies the directory where the Dockerfile for the httpd server is located
+          context: ./TP1/devops-httpd
+          # Docker image tag; all Docker tags must be lowercase
+          tags:  ${{secrets.DOCKERHUB_USR}}/devops-httpd:latest
+          # Only push the image if the current branch is 'main'
+          push: ${{ github.ref == 'refs/heads/main' }}

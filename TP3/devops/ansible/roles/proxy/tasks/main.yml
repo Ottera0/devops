@@ -1,0 +1,12 @@
+---
+# tasks file for devops/ansible/roles/database
+- name: Create httpd container
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  community.docker.docker_container:
+    name: devops-httpd
+    image: ottera/devops-httpd
+    networks:
+      - name: app-network
+    ports:
+    - 80:80
